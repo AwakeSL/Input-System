@@ -3,9 +3,10 @@ local Detectors = {}
 Detectors.Pressed = "Pressed"
 Detectors.Released = "Released"
 Detectors.Tap = "Tap"
-Detectors.SingleTap = "DoubleTap"
+Detectors.SingleTap = "SingleTap"
 Detectors.DoubleTap = "DoubleTap"
 Detectors.Held = "Held"
+Detectors.HeldFor = "HeldFor"
 
 export type Bind = typeof(Detectors[string])
 
@@ -33,7 +34,6 @@ Detectors.detectors = {
 	},
 	[Detectors.SingleTap] = {
 		onPressed = function(fire, state, settings)
-			local now = tick()
 			state.tapCount = (state.tapCount or 0) + 1
 			local currentTap = state.tapCount
 
@@ -65,10 +65,38 @@ Detectors.detectors = {
 		end,
 		onUpdate = function(fire, state, dt)
 			if state.holding then
-					fire()
+				fire()
 			end
 		end
 	},
+	[Detectors.HeldFor] = {
+	onPressed = function(fire, state, settings)
+		state.holding = true
+		state.heldTime = 0
+		state.fired = false
+	end,
+
+	onReleased = function(fire, state, settings)
+		state.holding = false
+		state.heldTime = 0
+		state.fired = false
+	end,
+
+	onUpdate = function(fire, state, dt, settings)
+		if not state.holding or state.fired then
+			return
+		end
+
+		state.heldTime = (state.heldTime or 0) + dt
+
+		local threshold = settings.time or 0.5
+
+		if state.heldTime >= threshold then
+			state.fired = true
+			fire()
+		end
+	end
+},
 }
 
 return Detectors

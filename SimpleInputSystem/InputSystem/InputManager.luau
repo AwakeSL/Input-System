@@ -3,12 +3,11 @@ local RunService = game:GetService("RunService")
 local InputManager = {}
 InputManager.__index = InputManager
 
-local Detectors = require(script.Parent.Config.InputDetectors)
-local ContextsFolder = script.Parent.Contexts
-
-local AllowedContexts = require(script.Parent.Config.InputContexts)
-InputManager.Contexts = AllowedContexts
+local Detectors        = require(script.Parent.Config.InputDetectors)
+local Contexts         = require(script.Parent.Config.InputContexts)
+InputManager.Contexts  = Contexts
 InputManager.Detectors = Detectors
+local ContextsFolder   = script.Parent.Contexts
 
 function InputManager.new(output)
 	local self = setmetatable({}, InputManager)
@@ -17,12 +16,12 @@ function InputManager.new(output)
 	self._contexts = {}
 	self._activeContexts = {} -- Key: contextInstance, Value: true
 	
-	for _, contextName in pairs(AllowedContexts) do
+	for _, contextName in pairs(Contexts) do
 		if typeof(contextName) == "string" then 
 			local context = self:addContext(contextName)
 			context.Enabled = false
 
-			local defaults = AllowedContexts.Defaults[contextName]
+			local defaults = Contexts.Defaults[contextName]
 			if defaults then
 				context.Priority = defaults.Priority or 0
 				context.Sink = defaults.Sink or false
@@ -226,7 +225,7 @@ function InputManager:update(dt)
 					if detector.onUpdate then
 						detector.onUpdate(function(additionalData)
 							self.output:trigger(actionData.connectionName, detectorType, additionalData or {})
-						end, actionData.detectorStates[detectorType], dt)
+						end, actionData.detectorStates[detectorType], dt, actionData.detectorSettings[detectorType] or {})
 					end
 				end
 			end
