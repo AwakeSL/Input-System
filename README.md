@@ -1,6 +1,8 @@
-# SimpleInputSystem 🕹️
+# Simple Input System
 
-`SimpleInputSystem` is a powerful, contextual, and modular input handling framework for Roblox built directly on top of native **`InputActionService`** instances. It decouples raw key presses from game actions by introducing **Contexts** (e.g., Combat, Menus) and custom input behavior **Detectors** (e.g., DoubleTap, HeldFor).
+`SimpleInputSystem` is a modular input handling framework for Roblox built directly on top of native **`InputActionService`** instances. It decouples raw key presses from game actions by introducing custom input behavior **Detectors** (e.g., DoubleTap, HeldFor).
+
+Created by: AwakeSL (AwakeSL on Discord) boiii
 
 The library provides two ways to use it:
 
@@ -9,7 +11,7 @@ The library provides two ways to use it:
 
 ---
 
-## 🚀 Quick Start (Using SimpleInputManager)
+## Quick Start (Using SimpleInputManager)
 
 The `SimpleInputManager` wrapper handles instantiating managers and exposes an easy-to-use API for standard code structures.
 
@@ -76,7 +78,7 @@ end
 
 ---
 
-## 🛠️ Out-of-the-Box Detectors
+## Out-of-the-Box Detectors
 
 You can utilize the following built-in detectors inside your bind configuration tables:
 
@@ -106,7 +108,7 @@ SimpleInputManager.bind(Contexts.Movement, "ChargeSuper", Enum.KeyCode.E, {
 
 ---
 
-## ⏭️ Skipping Simple Input: Custom Engine & Custom Outputs
+## Skipping Simple Input: Custom Engine & Custom Outputs
 
 Because the core `InputManager` framework is essentially a clean wrapper designed to manipulate Roblox's internal `InputAction`, `InputContext`, and `InputBinding` instances, you can bypass `SimpleInputManager` entirely.
 
