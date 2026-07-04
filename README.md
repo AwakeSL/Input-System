@@ -1,11 +1,11 @@
-# SimpleInputManager 🕹️
+# SimpleInputSystem 🕹️
 
-`SimpleInputSystem` is a powerful, contextual, and modular input handling framework for Roblox. It decouples raw key presses from game actions by introducing **Contexts** (e.g., Combat, Menus) and custom input behavior **Detectors** (e.g., DoubleTap, HeldFor).
+`SimpleInputSystem` is a powerful, contextual, and modular input handling framework for Roblox built directly on top of native **`InputActionService`** instances. It decouples raw key presses from game actions by introducing **Contexts** (e.g., Combat, Menus) and custom input behavior **Detectors** (e.g., DoubleTap, HeldFor).
 
 The library provides two ways to use it:
 
 1. **`SimpleInputManager`**: A high-level wrapper designed for quick, hassle-free binding with an integrated output stream.
-2. **`InputManager` Engine**: The core underlying framework, allowing you to ditch the default output setup and run completely custom event pipelines.
+2. **`InputManager` Engine**: The core underlying `InputActionService` wrapper, allowing you to ditch the default output setup and run completely custom event pipelines.
 
 ---
 
@@ -94,7 +94,7 @@ An example using `HeldFor`:
 
 ```lua
 SimpleInputManager.bind(Contexts.Movement, "ChargeSuper", Enum.KeyCode.E, {
-    [InputService.Detectors.HeldFor] = {
+    [SimpleInputManager.Detectors.HeldFor] = {
         time = 1.5, -- Must hold for 1.5 seconds
         on = function()
             print("Super charge complete!")
@@ -108,11 +108,13 @@ SimpleInputManager.bind(Contexts.Movement, "ChargeSuper", Enum.KeyCode.E, {
 
 ## ⏭️ Skipping Simple Input: Custom Engine & Custom Outputs
 
-If you want absolute control over your execution pipeline, skip `SimpleInputManager`. You can instantiate the core `InputManager` entirely on its own and **swap out the default OutputManager for your own custom output handling pipeline** (e.g., UI systems, custom Signal modules, or direct network replicators).
+Because the core `InputManager` framework is essentially a clean wrapper designed to manipulate Roblox's internal `InputAction`, `InputContext`, and `InputBinding` instances, you can bypass `SimpleInputManager` entirely.
+
+This lets you use the engine directly while **swapping out the default OutputManager for your own custom output handling pipeline** (e.g., custom Signal modules, UI state routers, or direct network replicators).
 
 ### Writing a Custom Output Handler
 
-Your custom output object must implement a `.trigger(self, connectionName, detectorType, additionalData)` method, which the `InputManager` engine fires into directly:
+Your custom output object must implement a `.trigger(self, connectionName, detectorType, additionalData)` method, which the `InputManager` wrapper hooks up and fires into directly from the engine's `StateChanged`, `Pressed`, and `Released` listeners:
 
 ```lua
 -- MyCustomOutput.lua
@@ -155,7 +157,7 @@ coreEngine:bind(
     "Combat", 
     "DodgeRoll", 
     Enum.KeyCode.LeftShift, 
-    Enum.InputActionType.Bool,
+    Enum.InputActionType.Bool, -- Directly configuring underlying Roblox InputAction properties
     {
         [InputManager.Detectors.DoubleTap] = { window = 0.2 }
     }
